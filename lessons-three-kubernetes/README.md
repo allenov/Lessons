@@ -49,6 +49,8 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: example-pod
+  labels:
+    app: B
 spec:
   containers:
   - name: nginx-container
@@ -76,7 +78,8 @@ metadata:
   name: example-service
 spec:
   selector:
-    app: example-app
+    matchLabels:
+      app: B
   ports:
   - protocol: TCP
     port: 80
@@ -119,6 +122,7 @@ spec:
    - **Deployment**: Deployment использует метки в `selector`, чтобы управлять Pods, поддерживая их количество на нужном уровне.
    - **Service**: Для того чтобы Service находил правильные Pods, он использует метки в `selector`.
 
+   **ReplicaSet** — это контроллер, который поддерживает заданное количество Pod, обеспечивая их доступность.
    Пример использования `selector` и `matchLabels` в ReplicaSet:
    ```yaml
    apiVersion: apps/v1
@@ -129,14 +133,35 @@ spec:
      replicas: 3
      selector:
        matchLabels:
-         app: my-app
+         app: A
      template:
        metadata:
          labels:
-           app: my-app
+           app: A
+       spec:
+         containers:
+         - name: nginx-container
+           image: nginx:1.21
+           ports:
+           - containerPort: 80
+   ```
+   Пример балансировки трафика к 3 подам, которые были созданы с помощью ReplicaSet:
+   ```yaml
+   apiVersion: v1
+   kind: Service
+   metadata:
+     name: my-replicaset-service
+   spec:
+     selector:
+       app: A
+     ports:
+     - protocol: TCP
+       port: 80
+       targetPort: 80
+     type: ClusterIP
    ```
 
-   В этом примере, ReplicaSet с `matchLabels` выбирает Pods, у которых есть метка `app: my-app`. В шаблоне (`template`) Pods также задается эта метка, чтобы убедиться, что созданные Pods будут соответствовать условиям селектора.
+   В этом примере, ReplicaSet с `matchLabels` выбирает Pods, у которых есть метка `app: A`. В шаблоне (`template`) Pods также задается эта метка, чтобы убедиться, что созданные Pods будут соответствовать условиям селектора.
 
 ### 3. **Template и метки**
    В **template** (например, в Deployment или ReplicaSet) метки важны для того, чтобы Pods, которые будут созданы, имели нужные метки. Эти метки должны соответствовать селектору, чтобы Pods были правильно управляемыми и маршрутизировались соответствующим образом.
@@ -401,35 +426,6 @@ spec:
 ```
 
 ![Диаграмма работы Pod, Service и Ingress](https://kubernetes.io/docs/images/ingress.svg)
-
----
-
-#### ReplicaSet: работа с Pod
-**ReplicaSet** — это контроллер, который поддерживает заданное количество Pod, обеспечивая их доступность.
-
-Пример:
-
-```yaml
-apiVersion: apps/v1
-kind: ReplicaSet
-metadata:
-  name: example-replicaset
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: my-app
-  template:
-    metadata:
-      labels:
-        app: my-app
-    spec:
-      containers:
-      - name: my-app-container
-        image: nginx
-        ports:
-        - containerPort: 80
-```
 
 ---
 
