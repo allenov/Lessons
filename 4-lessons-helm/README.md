@@ -284,98 +284,101 @@ helm install my-nginx bitnami/nginx --namespace web --set service.type=LoadBalan
 
 ## 6. Лучшие практики оптимизации работы с Helm
 
-### 1. **Универсальная команда для установки и обновления чарта**
-Часто при установке или обновлении чарта используются отдельные команды, но их можно объединить с помощью `--install`:
-   ```bash
-   helm upgrade --install <release-name> <chart-name> --namespace <namespace-name> --create-namespace
-   ```
+### 1. Универсальная команда для установки и обновления чарта
+
+Часто при установке или обновлении чарта используются отдельные команды, но их можно объединить:
+
+```bash
+helm upgrade --install <release-name> <chart-name> --namespace <namespace-name> --create-namespace
+```
+
 Эта команда:
+
 - Установит чарт, если он еще не существует.
 - Обновит его, если релиз уже есть.
 - Автоматически создаст namespace, если он не существует, благодаря флагу `--create-namespace`.
 
-### 2. **Сначала используйте `helm lint` для проверки чарта**
-   ```bash
-   helm lint <chart-directory>
-   ```
+### 2. Сначала используйте `helm lint` для проверки чарта
+
+```bash
+helm lint <chart-directory>
+```
 
 `helm lint` помогает обнаружить синтаксические ошибки, некорректные ссылки на значения и другие потенциальные проблемы в чарт-файлах.
 
-### 3. **Проверка рендеринга перед установкой**
+### 3. Проверка рендеринга перед установкой
+
 Чтобы убедиться, что все параметры указаны правильно и чарт рендерится корректно:
-   ```bash
-   helm template <release-name> <chart-name> --values custom-values.yaml
-   ```
+
+```bash
+helm template <release-name> <chart-name> --values custom-values.yaml
+```
+
 Это позволяет избежать ошибок при установке.
 
-### 4. **Использование стандартного файла параметров**
-Для удобства работы:
-- Храните все изменения параметров в отдельном файле, например, `custom-values.yaml`.
-- Используйте этот файл для всех операций:
-   ```bash
-   helm upgrade --install <release-name> <chart-name> --namespace <namespace-name> --values custom-values.yaml --create-namespace
-   ```
+### 4. Использование Helm Diff
 
-### 5. **Использование Helm Diff**
-Перед применением изменений, особенно в production-средах, важно проверить, как они повлияют на текущую установку. Для этого используйте плагин **Helm Diff**:
+Перед применением изменений, особенно в production-средах, важно проверить, как они повлияют на текущую установку. Для этого используйте плагин Helm Diff:
 
 1. Установите плагин:
-   ```bash
-   helm plugin install https://github.com/databus23/helm-diff
-   ```
+
+    ```bash
+    helm plugin install https://github.com/databus23/helm-diff
+    ```
 
 2. Проверьте различия:
-   ```bash
-   helm diff upgrade <release-name> <chart-name> --namespace <namespace-name>
-   ```
+
+    ```bash
+    helm diff upgrade <release-name> <chart-name> --namespace <namespace-name>
+    ```
 
 Это поможет избежать нежелательных изменений, таких как удаление или изменение критически важных ресурсов.
 
-### 6. **Разделение окружений**
-Создавайте отдельные values-файлы для каждого окружения (например, `dev`, `staging`, `prod`) и храните их в системе управления версиями. Это позволяет легко переключаться между окружениями.
+### 5. Разделение окружений
 
-Пример структуры файлов:
-   ```
-   charts/
-     values-dev.yaml
-     values-staging.yaml
-     values-prod.yaml
-   ```
+Создавайте отдельные values-файлы для каждого окружения (например, dev, staging, prod) и храните их в системе управления версиями. Это позволяет легко переключаться между окружениями.
 
-Установка чарта для `prod` окружения:
-   ```bash
-   helm upgrade --install <release-name> <chart-name> -f values-prod.yaml --namespace prod
-   ```
+#### Пример структуры файлов:
 
-#### Использование global.yaml
+```
+charts/
+  values-dev.yaml
+  values-staging.yaml
+  values-prod.yaml
+```
+
+#### Установка чарта для prod окружения:
+
+```bash
+helm upgrade --install <release-name> <chart-name> -f values-prod.yaml --namespace prod
+```
+
+#### Использование `global.yaml`
+
 Если в ваших чартах есть общие параметры, используйте файл `global.yaml` для их хранения. Это позволяет избегать дублирования настроек между окружениями.
 
-Пример структуры:
-   ```
-   charts/
-     global.yaml
-     values-dev.yaml
-     values-staging.yaml
-     values-prod.yaml
-   ```
+#### Пример структуры:
 
-Пример использования:
-   ```bash
-   helm upgrade --install <release-name> <chart-name> \
-     -f global.yaml \
-     -f values-prod.yaml \
-     --namespace prod
-   ```
+```
+charts/
+  global.yaml
+  values-dev.yaml
+  values-staging.yaml
+  values-prod.yaml
+```
+
+#### Пример использования:
+
+```bash
+helm upgrade --install <release-name> <chart-name> \
+-f global.yaml \
+-f values-prod.yaml \
+--namespace prod
+```
 
 В этом случае параметры из `global.yaml` будут объединены с параметрами из `values-prod.yaml`. Если одинаковые ключи присутствуют в обоих файлах, приоритет отдается значениям из последнего указанного файла.
 
-### 7. **Проверка состояния релиза**
-После установки или обновления релиза проверьте его статус:
-   ```bash
-   helm status <release-name> --namespace <namespace-name>
-   ```
 
-Эти практики помогут избежать распространенных ошибок, ускорить работу и сделать управление чартами более удобным и эффективным. Если нужно больше примеров или детализация какого-либо пункта, напишите!
 
 ---
 
