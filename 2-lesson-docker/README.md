@@ -64,10 +64,10 @@
 
 ---
 
-   ![Выбираем os](/lesson-two-docker/images/image1.png)
+   ![Выбираем os](/2-lesson-docker/images/image1.png)
 
 
-   ![Выбираем os](/lesson-two-docker/images/image2.png)
+   ![Выбираем os](/2-lesson-docker/images/image2.png)
 
 ---
 

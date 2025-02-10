@@ -60,7 +60,7 @@ P.S Текст, кстати, тоже можно прочитать полез�
 sudo apt-get install iotop htop
 apt install git
 git clone https://github.com/allenov/Lessons.git
-cd Lessons/lesson-one-debug/
+cd Lessons/1-lesson-debug/
 chmod +x la-tresh.sh
 ./la-tresh.sh
 ```
@@ -72,6 +72,11 @@ chmod +x la-tresh.sh
 #### Задание 6: Большая загрузка памяти.
 
 В первом делаем:
+``` bash
+swapoff -a
+```
+Проверяем что swap выключен в htop.
+
 ``` bash
 chmod +x leak-mem.sh
 ./leak-mem.sh

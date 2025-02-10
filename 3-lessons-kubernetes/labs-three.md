@@ -34,6 +34,7 @@
    ```
 2. Создайте ConfigMap для MetalLB:
    ```yaml
+   # metallb-config.yaml
    apiVersion: v1
    kind: ConfigMap
    metadata:
@@ -54,7 +55,7 @@
 
 #### Шаг 3. Установка Ingress-Nginx
 
-1. Установите Ingress-Nginx без Helm:
+1. Установите Ingress-Nginx:
    ```bash
    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
    ```
@@ -125,6 +126,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  ingressClassName: nginx
   rules:
   - host: nginx.local
     http:
@@ -343,6 +345,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  ingressClassName: nginx
   rules:
   - host: pgadmin.local
     http:
@@ -379,5 +382,11 @@ kubectl apply -f pgadmin-ingress.yaml
    - **Maintenance Database**: `mydb`
    - **Username**: `admin`
    - **Password**: `password`
+
+
+![Login](/3-lessons-kubernetes/images/image4.png)
+
+![Pgadmin4](/3-lessons-kubernetes/images/image5.png)
+
 
 Теперь вы можете управлять базой данных PostgreSQL через PgAdmin.
