@@ -111,7 +111,7 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 80
-  type: LoadBalancer
+  type: ClusterIP
 ```
 
 #### Шаг 3. Создайте Ingress
@@ -330,7 +330,7 @@ spec:
   - protocol: TCP
     port: 80
     targetPort: 80
-  type: LoadBalancer
+  type: ClusterIP
 ```
 
 #### Шаг 3. Создайте Ingress для PgAdmin
@@ -390,3 +390,9 @@ kubectl apply -f pgadmin-ingress.yaml
 
 
 Теперь вы можете управлять базой данных PostgreSQL через PgAdmin.
+
+P.s удалите за собой кластер k8s для следующей работы.
+
+```
+sudo /usr/local/bin/k3s-uninstall.sh
+```

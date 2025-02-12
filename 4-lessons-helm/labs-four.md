@@ -186,10 +186,10 @@ server:
 ```
 2. Установите Vault:
 ```bash
-helm repo add hashicorp https://helm.releases.hashicorp.com
-helm repo update
-helm install vault hashicorp/vault --namespace vault --create-namespace --values vault-values.yaml
+helm install vault ./Lessons/4-lessons-helm/vault-0.29.1.tgz --namespace vault --create-namespace --values vault-values.yaml
 ```
+Путь до файла ./Lessons/4-lessons-helm/vault-0.29.1.tgz может меняться в зависимости от того, где вы находитесь. \
+
 3. Инициализируйте Vault:
 ```bash
 kubectl exec -it vault-0 -n vault -- /bin/sh
