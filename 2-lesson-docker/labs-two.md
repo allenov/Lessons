@@ -35,31 +35,18 @@
    docker run -d -p 8080:80 nginx
    ```
 2. Проверьте работу nginx, открыв в браузере `http://localhost:8080`.
-3. Остановите контейнер:
+3. Посмотрите логи контейнера, чтобы убедиться, что все работает корректно:
+   ```bash
+   docker logs <container_id>
+   ```
+4. Остановите контейнер:
    ```bash
    docker stop <container_id>
    ```
-4. Удалите контейнер:
+5. Удалите контейнер:
    ```bash
    docker rm <container_id>
    ```
-
-#### Задание 5*: Исследование cgroups и namespaces
-1. Запустите контейнер и войдите в его оболочку:
-   ```bash
-   docker run -it --rm ubuntu bash
-   ```
-2. В другом терминале найдите PID процесса контейнера:
-   ```bash
-   docker ps
-   docker inspect <container_id> | grep Pid
-   ```
-3. Посмотрите, как cgroups и namespaces применяются к процессу контейнера:
-   ```bash
-   ls /proc/<pid>/ns
-   cat /proc/<pid>/cgroup
-   ```
-
 
 ### Запуск веб-приложения с Nginx в Docker
 
@@ -131,3 +118,78 @@
    docker ps  # Найдите ID контейнера
    docker stop <container_id>
    ```
+
+### Развертывание приложения на Golang
+
+#### Цель:
+Научиться контейнеризировать и запускать простое приложение на Go.
+
+#### Шаги:
+
+1. **Создание структуры проекта**
+
+   Создайте структуру директорий для вашего Go проекта:
+   ```
+   my-go-app/
+   ├── Dockerfile
+   └── main.go
+   ```
+
+2. **Создание main.go**
+
+   Напишите простое приложение на Go, которое будет обрабатывать HTTP запросы:
+   ```go
+   // main.go
+   package main
+
+   import (
+     "fmt"
+     "net/http"
+   )
+
+   func handler(w http.ResponseWriter, r *http.Request) {
+     fmt.Fprintf(w, "Hello from Go server!")
+   }
+
+   func main() {
+     http.HandleFunc("/", handler)
+     fmt.Println("Server is running on http://localhost:8080")
+     http.ListenAndServe(":8080", nil)
+   }
+   ```
+
+3. **Создание Dockerfile**
+
+   Создайте `Dockerfile` для Go приложения:
+   ```dockerfile
+   # Используем официальный образ Golang
+   FROM golang:1.17
+
+   # Создаем рабочую директорию
+   WORKDIR /app
+
+   # Копируем код приложения
+   COPY . .
+
+   # Компилируем приложение
+   RUN go build -o my-go-app
+
+   # Указываем порт
+   EXPOSE 8080
+
+   # Запускаем приложение
+   CMD ["./my-go-app"]
+   ```
+
+4. **Сборка и запуск контейнера**
+
+   Перейдите в директорию `my-go-app` и выполните команды для сборки и запуска контейнера:
+
+   ```bash
+   docker build -t my-go-app .
+   docker run -d -p 8080:8080 my-go-app
+   ```
+
+5. **Проверка работы**
+
+   Откройте браузер и перейдите по адресу `http://localhost:8080`. Вы должны увидеть сообщение "Hello from Go server!".
